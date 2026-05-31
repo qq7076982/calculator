@@ -23,13 +23,11 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
-      - name: Build debug APK (arm64 only)
-        run: flutter build apk --debug --target-platform=android-arm64
-        env:
-          GRADLE_OPTS: "-Xmx2048m -Dorg.gradle.daemon=false"
+      - name: Build debug APK
+        run: flutter build apk --debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: calculator-apk
-          path: build/app/outputs/flutter-apk/app-arm64-debug.apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
