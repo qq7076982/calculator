@@ -1,0 +1,36 @@
+name: Build APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Clone Flutter SDK
+        run: |
+          git clone --depth 1 --branch stable https://github.com/flutter/flutter.git /opt/flutter
+          echo "/opt/flutter/bin" >> $GITHUB_PATH
+
+      - name: Setup Flutter
+        run: flutter precache
+        env:
+          FLUTTER_VERSION: '3.44.0'
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build debug APK
+        run: flutter build apk --debug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: calculator-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
