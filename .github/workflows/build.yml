@@ -20,20 +20,20 @@ jobs:
       - name: Setup Flutter
         run: flutter precache
 
-      - name: Fix repository mirrors (remove aliyun)
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Fix repository mirrors
         run: |
           sed -i 's|maven { url = uri("https://maven.aliyun.com/repository/google") }||g' android/build.gradle.kts
           sed -i 's|maven { url = uri("https://maven.aliyun.com/repository/jcenter") }||g' android/build.gradle.kts
           sed -i 's|maven { url = uri("https://maven.aliyun.com/repository/central") }||g' android/build.gradle.kts
-          sed -i '/^[[:space:]]*$/d' android/build.gradle.kts
-
-      - name: Get dependencies
-        run: flutter pub get
 
       - name: Build debug APK
         run: flutter build apk --debug
         env:
-          GRADLE_OPTS: "-Xmx4g -XX:MaxMetaspaceSize=512m -Dorg.gradle.daemon=false"
+          # Large memory for Kotlin compilation
+          GRADLE_OPTS: "-Xmx6g -XX:MaxMetaspaceSize=1g -Dorg.gradle.daemon=false -Dkotlin.parallelTasks=false"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
